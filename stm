@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Галактика - Пиксельный редактор</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <!-- Подключение anime.js и dom-to-image -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+</head>
+<body>
+    <!-- Главная страница -->
+    <div id="main-page" class="page active">
+        <header>
+            <h1>Галактика</h1>
+            <nav>
+                <ul>
+                    <li><a href="#">Главная</a></li>
+                    <li><a href="#">О сайте</a></li>
+                </ul>
+            </nav>
+            <button id="theme-toggle">Сменить тему</button>
+        </header>
+
+        <main>
+            <section class="hero">
+                <h2>Добро пожаловать в пиксельный редактор</h2>
+                <p>Здесь ты научишься делать классные картинки для твоих каналов, например, Telegram и Instagram. Перейдя по кнопке, ты получишь доступ к редактору — всё бесплатно и в твоём распоряжении!</p>
+                <button class="editor-btn" id="to-editor-btn">Перейти в редактор</button>
+            </section>
+            <section class="features">
+                <h3>Возможности</h3>
+                <ul>
+                    <li>Рисование пиксельной графики</li>
+                    <li>Сохранение изображений</li>
+                    <li>Переключение тем</li>
+                </ul>
+            </section>
+        </main>
+
+        <footer>
+            <p>© 2025 Галактика. Все права защищены.</p>
+        </footer>
+    </div>
+
+    <!-- Редактор -->
+    <div id="editor-page" class="page">
+        <div class="toolbar">
+            <div class="palette">
+                <button class="color" style="background: red;" data-color="red"></button>
+                <button class="color" style="background: blue;" data-color="blue"></button>
+                <button class="color" style="background: green;" data-color="green"></button>
+                <button class="color" style="background: yellow;" data-color="yellow"></button>
+                <button class="color" style="background: orange;" data-color="orange"></button>
+                <button class="color" style="background: purple;" data-color="purple"></button>
+                <button class="color" style="background: pink;" data-color="pink"></button>
+                <button class="color" style="background: brown;" data-color="brown"></button>
+                <button class="color" style="background: black;" data-color="black"></button>
+            </div>
+            <button id="eraser">Ластик</button>
+            <button id="brush">Кисточка</button>
+            <button id="fill">Заливка</button>
+            <button id="download">Скачать</button>
+            <button id="to-main-btn">Вернуться на главную</button>
+        </div>
+        <div id="grid"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
+body {
+    font-family: 'Press Start 2P', cursive;
+    background-color: #000000;
+    color: #ffffff;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+.page {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    transition: opacity 0.5s ease-in-out;
+}
+
+#main-page.active {
+    opacity: 1;
+    display: block;
+}
+
+#main-page {
+    opacity: 0;
+    display: none;
+}
+
+#editor-page.active {
+    opacity: 1;
+    display: block;
+}
+
+#editor-page {
+    opacity: 0;
+    display: none;
+}
+
+/* Стили главной страницы */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: #333;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin: 0 15px;
+}
+
+
+
+nav a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.hero, .features {
+    margin: 50px 0;
+}
+
+.editor-btn {
+    font-family: 'Press Start 2P', cursive;
+    background-color: #ffcc00;
+    border: none;
+    padding: 15px 30px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+.editor-btn:hover {
+    background-color: #ffaa00;
+}
+
+footer {
+    margin-top: 50px;
+    padding: 20px;
+    background-color: #333;
+}
+
+/* Стили редактора */
+.toolbar {
+    display: flex;
+    margin: 20px 0;
+    justify-content: center;
+    gap: 10px;
+}
+
+.palette {
+    display: flex;
+    gap: 5px;
+    margin-right: 10px;
+}
+
+.color {
+    width: 30px;
+    height: 30px;
+    border: 1px solid #000;
+    cursor: pointer;
+}
+
+#grid {
+    display: grid;
+    grid-template-columns: repeat(16, 20px);
+    grid-template-rows: repeat(16, 20px);
+    gap: 1px;
+    background: #ccc;
+    margin: 0 auto;
+}
+
+.pixel {
+    width: 20px;
+    height: 20px;
+    background: white;
+    border: 1px solid #ddd;
+    cursor: pointer;
+}
+
+.dark-theme {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+h1 {
+    transition: text-shadow 0.5s ease-in-out;
+}
+const mainPage = document.getElementById("main-page");
+const editorPage = document.getElementById("editor-page");
+const toEditorBtn = document.getElementById("to-editor-btn");
+const toMainBtn = document.getElementById("to-main-btn");
+
+toEditorBtn.addEventListener("click", () => {
+    anime({
+        targets: mainPage,
+        opacity: 0,
+        duration: 500,
+        easing: "easeInOutQuad",
+        complete: () => {
+            mainPage.classList.remove("active");
+            editorPage.classList.add("active");
+            anime({
+                targets: editorPage,
+                opacity: 1,
+                duration: 500,
+                easing: "easeInOutQuad"
+            });
+        }
+    });
+});
+
+toMainBtn.addEventListener("click", () => {
+    anime({
+        targets: editorPage,
+        opacity: 0,
+        duration: 500,
+        easing: "easeInOutQuad",
+        complete: () => {
+            editorPage.classList.remove("active");
+            mainPage.classList.add("active");
+            anime({
+                targets: mainPage,
+                opacity: 1,
+                duration: 500,
+                easing: "easeInOutQuad"
+            });
+        }
+    });
+});
+
+// Тема
+const themeToggle = document.getElementById("theme-toggle");
+const body = document.body;
+
+if (localStorage.getItem("theme") === "dark") {
+    body.classList.add("dark-theme");
+}
+
+themeToggle.addEventListener("click", () => {
+    body.classList.toggle("dark-theme");
+    localStorage.setItem("theme", body.classList.contains("dark-theme") ? "dark" : "light");
+});
+
+// Анимация заголовка
+const title = document.querySelector("h1");
+const neonColors = ["#ff0000", "#00ff00", "#0000ff", "#ff00ff", "#ffff00", "#00ffff"];
+let colorIndex = 0;
+
+function animateTitle() {
+    title.style.textShadow = `0 0 10px ${neonColors[colorIndex]}, 0 0 20px ${neonColors[colorIndex]}`;
+    colorIndex = (colorIndex + 1) % neonColors.length;
+}
+
+setInterval(animateTitle, 500);
+
+// Логика редактора
+const grid = document.getElementById("grid");
+const colors = document.querySelectorAll(".color");
+const eraser = document.getElementById("eraser");
+const brushButton = document.getElementById("brush");
+const fillButton = document.getElementById("fill");
+const downloadButton = document.getElementById("download");
+let currentColor = getCookie("currentColor") || "black";
+let isDrawing = false;
+let currentMode = "brush";
+
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(";").shift();
+    return "";
+}
+
+function setCookie(name, value, days = 7) {
+    const expires = new Date(Date.now() + days * 864e5).toUTCString();
+    document.cookie = `${name}=${value}; expires=${expires}; path=/`;
+}
+
+function paintPixel(pixel) {
+    pixel.style.background = currentColor;
+}
+
+for (let i = 0; i < 256; i++) {
+    const pixel = document.createElement("div");
+    pixel.classList.add("pixel");
+    pixel.addEventListener("mousedown", () => {
+        if (currentMode === "brush") {
+            paintPixel(pixel);
+            isDrawing = true;
+        } else if (currentMode === "fill") {
+            fillAllPixels();
+        }
+    });
+    pixel.addEventListener("mouseover", () => {
+        if (isDrawing && currentMode === "brush") paintPixel(pixel);
+    });
+    pixel.addEventListener("mouseup", () => {
+        isDrawing = false;
+    });
+    grid.appendChild(pixel);
+}
+
+colors.forEach(color => {
+    color.addEventListener("click", () => {
+        currentColor = color.dataset.color;
+        setCookie("currentColor", currentColor);
+    });
+});
+
+eraser.addEventListener("click", () => {
+    currentColor = "white";
+    setCookie("currentColor", currentColor);
+});
+
+brushButton.addEventListener("click", () => {
+    currentMode = "brush";
+});
+
+fillButton.addEventListener("click", () => {
+    currentMode = "fill";
+    fillAllPixels();
+});
+
+
+function fillAllPixels() {
+    const pixels = document.querySelectorAll(".pixel");
+    anime({
+        targets: pixels,
+        background: currentColor,
+        delay: anime.stagger(50),
+        easing: "easeInOutQuad",
+        update: () => {
+            pixels.forEach(pixel => pixel.style.background = currentColor);
+        }
+    });
+}
+
+document.addEventListener("mouseup", () => {
+    isDrawing = false;
+});
+
+downloadButton.addEventListener("click", () => {
+    domtoimage.toPng(grid)
+        .then(dataUrl => {
+            const link = document.createElement("a");
+            link.href = dataUrl;
+            link.download = "pixel-art.png";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        })
+        .catch(error => console.error("Ошибка при создании изображения:", error));
+});
